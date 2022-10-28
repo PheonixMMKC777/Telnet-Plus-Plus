@@ -24,10 +24,10 @@ byte[] EnterKey = {0x0A};//, 0x06, 0x07, 0x07, 0x08,0x09, 0x0A, 0x0b, };
 byte[] CarriageReturn = { 0x0D };//, 0x06, 0x07, 0x07, 0x08,0x09, 0x0A, 0x0b, };
 byte[] buffer = new byte[65535];
 string ret;
-string input;
+string input = " ";
 int state = 1;
 Stream stm;
-int shortwait = 300;
+int shortwait = 350;
 string DeviceIP = " ";
 int Waittime = 1399;
 bool Live = true;
@@ -97,7 +97,10 @@ void MainCode()
     Console.ForegroundColor = ConsoleColor.Red;
     Console.WriteLine("PUSH ENTER");
     Console.ForegroundColor = ConsoleColor.Blue;
-    Console.WriteLine("To Update Login, see CFG.ini");
+    Console.Write("To Update Login, see");
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.WriteLine(" CFG.ini");
+    Console.ForegroundColor = ConsoleColor.Blue;
     Console.Write("To Close Session, type");
     Console.ForegroundColor = ConsoleColor.Red;
     Console.WriteLine(" break");
@@ -153,38 +156,35 @@ void MainCode()
     void RetreiveData()
     {
 
-        buffer = new byte[65535]; //clear buffer
+        buffer = new byte[65535]; //clear buffer        
+        stm = client.GetStream();
         Thread.Sleep(Waittime);
         Thread.Sleep(shortwait);
-        stm = client.GetStream();
+        Thread.Sleep(shortwait);
         int data = stm.Read(buffer, 0, buffer.Length);
-        ret = ASEN.GetString(buffer);
-
-        ret = ret.TrimEnd(Convert.ToChar(0x0D));
+        ret = ASEN.GetString(buffer,0,buffer.Length);
+        ret = ret.TrimEnd('\0');
     }
 
     void AutoLogin()
     {
         stm.Write(EnterKey, 0, EnterKey.Length);
-        //stm.Write(CarriageReturn, 0, CarriageReturn.Length);
         Console.Write(".");
 
         buffer = ASEN.GetBytes(Username);
         stm.Write(buffer, 0, buffer.Length);
         stm.Write(EnterKey, 0, EnterKey.Length);
-        //stm.Write(CarriageReturn, 0, CarriageReturn.Length);
         Thread.Sleep(shortwait);
         Console.Write(".");
 
         buffer = ASEN.GetBytes(Password);
         stm.Write(buffer, 0, buffer.Length);
         stm.Write(EnterKey, 0, EnterKey.Length);
-        Thread.Sleep(Waittime);
-        Console.Write(".");
+        Thread.Sleep(shortwait);
 
-        Thread.Sleep(Waittime); 
-        stm.Write(CarriageReturn, 0, CarriageReturn.Length);
         Console.Write(".");
+        stm.Write(CarriageReturn, 0, CarriageReturn.Length);
+        Thread.Sleep(shortwait);
 
 
 
